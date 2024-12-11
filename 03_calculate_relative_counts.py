@@ -55,7 +55,6 @@ for _,row in sumcounts.iterrows():
             p, m, r, c
         ]
         modcounts.append(tmp)
-clear_output(wait=True)
 del sumcounts
 
 cols = [

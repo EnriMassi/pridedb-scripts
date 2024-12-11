@@ -28,4 +28,4 @@ from
 limit 1000
 
 \copy (select psm.id as PSM_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm where substr(usi, 8, 9) = 'PXD000498') TO 'D:/link-mgfquant-to-ionbot/PSMs_PXD000498_v0110.csv' DELIMITER ',' CSV HEADER;
-\copy (select psm.id as PSM_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm order by psm.id) TO 'D:/link-mgfquant-to-ionbot/20241122_PSMs_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
+\copy (select psm.id as psm_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm order by psm.id) TO 'D:/link-mgfquant-to-ionbot/20241122_PSMs_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
