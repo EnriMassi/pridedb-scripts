@@ -27,7 +27,9 @@ median_intensities = psms.groupby(['PXD','filename','peptidoform_id'])[['peak_in
 median_intensities['log_peak_intensity'] = median_intensities.peak_intensity.apply(np.log10)
 median_intensities.reset_index(inplace=True)
 
-median_intensities.to_csv(f'{parser.parse_args().date}_PSMs_MS1_median_peak_intensities.csv.gz', index=False, compression='gzip')
+median_intensities.to_csv(os.path.join(parser.parse_args().data_folder,
+                                       f'{parser.parse_args().date}_PSMs_MS1_median_peak_intensities.csv.gz'), 
+                          index=False, compression='gzip')
 
 
 # In[]:

@@ -28,7 +28,7 @@ for C in ['ptm_loc','ptm_name','ptm_res','classification']: #
 peptidoforms.ptm_loc = peptidoforms.ptm_loc.apply(lambda x: [np.nan] if x==[np.nan] else [str(int(_)) for _ in x])
 for C in ['ptm_loc','ptm_name','ptm_res','classification']: #
     peptidoforms[C] = peptidoforms[C].apply(lambda x: np.nan if x==[np.nan] else '|'.join(x))
-peptidoforms.drop_duplicates(inplace=True)
+# peptidoforms.drop_duplicates(inplace=True)
 print(f'Length of peptidoforms df = {peptidoforms.shape[0]:,}')
 print(f'# unique peptidoform IDs = {len(set(peptidoforms.peptidoform_id)):,}')
 print('-------')
@@ -45,7 +45,7 @@ except:
     print(f'Length of peptidoforms df = {merged_data.shape[0]:,}')
     print(f'# unique peptidoform IDs = {len(set(merged_data.psm_id)):,}')
 
-merged_data.to_csv(parser.parse_args().output+'.csv.gz', index=False, compression='gzip')
+# merged_data.to_csv(parser.parse_args().output+'.csv.gz', index=False, compression='gzip')
 
 
 # In[]:

@@ -2,7 +2,7 @@
 select count(distinct(pxd_identifier)) from project;
 
 --rawfile2pride
-\copy (SELECT project_id, file_name, number_msms, number_peptides, number_peptidoforms FROM assay JOIN run ON assay.id = run.assay_id) TO 'D:/20241107_rawfile2pride_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
+--\copy (SELECT project_id, file_name, number_msms, number_peptides, number_peptidoforms FROM assay JOIN run ON assay.id = run.assay_id) TO 'D:/20241107_rawfile2pride_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
 \copy (SELECT project_id, file_name, searchdatabase.name as search_db, number_msms, number_peptides, number_peptidoforms FROM run JOIN searchdatabase on searchdatabase.id=run.searchdatabase_id) TO 'D:/20241107_rawfile2pride_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
 
 --IDs
@@ -28,4 +28,4 @@ from
 limit 1000
 
 \copy (select psm.id as PSM_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm where substr(usi, 8, 9) = 'PXD000498') TO 'D:/link-mgfquant-to-ionbot/PSMs_PXD000498_v0110.csv' DELIMITER ',' CSV HEADER;
-\copy (select psm.id as psm_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm order by psm.id) TO 'D:/link-mgfquant-to-ionbot/20241122_PSMs_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;
+\copy (select psm.id as psm_id,run_id,peptidoform_id,scan_number,usi,precursor_mass,precursor_charge,retention_time from psm order by psm.id) TO 'D:/20241218_PSMs_v0113_metamORF.csv' DELIMITER ',' CSV HEADER;

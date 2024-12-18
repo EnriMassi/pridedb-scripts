@@ -2,6 +2,7 @@
 # coding: utf-8
 import pandas as pd
 import numpy as np
+from datetime import datetime
 import gzip, pickle, os, re, ast, sys
 from PTMmap import Fasta, PTMs_remapping
 from string import ascii_uppercase
@@ -23,39 +24,33 @@ def add_seq_start(row):
         return list(positions)
     except:
         return [np.nan]
+    
+def zip_modifications(row):
+    iterator = zip(row.ptm_loc, row.ptm_name, row.ptm_res, row.classification)
+    return [f'{row.LeadProt}|{p}|{r}|{m}' for p,m,r,c in iterator if r in list(ascii_uppercase) and c not in ['ragging','semi_tryptic']]
+
+START = datetime.now()
 
 
 # In[ ]:
 sumcounts = pd.read_csv(f"./{parser.parse_args().data_folder}/{parser.parse_args().date}_Peptides_Abs_Counts.csv.gz")
 print(sumcounts.shape)
-# sumcounts.file_name = sumcounts.file_name.str.srip('.mgf.gzip')
+sumcounts = sumcounts[sumcounts.ptm_loc!='[nan]'].copy(deep=True)
 sumcounts.reset_index(drop=True, inplace=True)
 for C in ['ptm_loc','ptm_name','ptm_res','classification']:
     sumcounts[C] = sumcounts[C].apply(ast_literal)
-sumcounts = sumcounts[sumcounts.ptm_loc!='[nan]'].copy(deep=True)
+sumcounts.ptm_loc = sumcounts.ptm_loc.apply(lambda x: [np.nan] if x==[np.nan] else [str(int(_)) for _ in x])
 print(sumcounts.shape)
 
+sumcounts['modifications'] = sumcounts.apply(zip_modifications, axis=1)
+sumcounts.drop(columns=['ptm_name','ptm_loc','ptm_res'], inplace=True)
 
-# In[ ]:
-# sumcounts['mapped_ptms'] = sumcounts.apply(add_seq_start, axis=1)
-# sumcounts.to_csv(f"./{parser.parse_args().data_folder}/{parser.parse_args().date}_PTM_Relative_Counts_pt1_.csv.gz",
-#                  index=False, compression='gzip')
-xx = sumcounts.shape[0]
-modcounts = []
-for _,row in sumcounts.iterrows():
-    print(f'{_+1:,} / {xx:,}')
-    # iterator = zip(row.mapped_ptms, row.ptm_name, row.ptm_res, row.classification)
-    iterator = zip(row.ptm_loc, row.ptm_name, row.ptm_res, row.classification)
-    for p,m,r,c in iterator:
-        if r not in list(ascii_uppercase) or c in ['ragging','semi_tryptic']:
-            continue
-        tmp = [
-            row.file_name, row.peptidoform_id, row.psm_counts, row.is_modified, row.sequence,
-            row.TOT_seq_counts, row.LeadProt, row.all_UniAcc, row.TOT_seq_counts,
-            p, m, r, c
-        ]
-        modcounts.append(tmp)
-del sumcounts
+sumcounts = sumcounts.explode('modifications')
+sumcounts[['LeadProt2','ptm_loc','ptm_res','ptm_name']] = sumcounts.modifications.str.split('|', expand=True)
+sumcounts.ptm_loc = sumcounts.ptm_loc.apply(int)
+sumcounts.rename(columns={'classification':'ptm_class', 
+                          'all_UniAcc':'Gene_name'}, 
+                 inplace=True)
 
 cols = [
     'file_name',
@@ -66,14 +61,14 @@ cols = [
     'TOT_seq_counts',
     'LeadProt',
     'Gene_name',
-    'Uniprot_entry_name',
     'ptm_loc',
     'ptm_name',
     'ptm_res',
     'ptm_class',
 ]
 
-modcounts = pd.DataFrame(modcounts, columns=cols)
+modcounts = sumcounts[cols].copy(deep=True)
+del sumcounts
 
 
 # In[ ]:
@@ -103,3 +98,9 @@ relative_counts = pd.DataFrame(relative_counts,
 relative_counts[['UniAcc','ptm_pos','ptm_res','ptm_name']] = relative_counts.PTM_ID.str.split('|',expand=True)
 relative_counts.to_csv(f"./{parser.parse_args().data_folder}/{parser.parse_args().date}_PTM_Relative_Counts.csv.gz",
                        index=False, compression='gzip')
+
+
+# In[]:
+END = datetime.now()
+print('Started: ', START.isoformat())
+print('Finished:', END.isoformat())
