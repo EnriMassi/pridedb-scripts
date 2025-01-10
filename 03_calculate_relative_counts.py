@@ -35,7 +35,6 @@ START = datetime.now()
 # In[ ]:
 sumcounts = pd.read_csv(f"./{parser.parse_args().data_folder}/{parser.parse_args().date}_Peptides_Abs_Counts.csv.gz")
 print(sumcounts.shape)
-sumcounts = sumcounts[sumcounts.ptm_loc!='[nan]'].copy(deep=True)
 sumcounts.reset_index(drop=True, inplace=True)
 for C in ['ptm_loc','ptm_name','ptm_res','classification']:
     sumcounts[C] = sumcounts[C].apply(ast_literal)
@@ -47,6 +46,10 @@ sumcounts.drop(columns=['ptm_name','ptm_loc','ptm_res'], inplace=True)
 
 sumcounts = sumcounts.explode('modifications')
 sumcounts[['LeadProt2','ptm_loc','ptm_res','ptm_name']] = sumcounts.modifications.str.split('|', expand=True)
+# print(sumcounts.head())
+# print(sumcounts.tail())
+
+sumcounts = sumcounts[~sumcounts.ptm_res.isna()].copy(deep=True)
 sumcounts.ptm_loc = sumcounts.ptm_loc.apply(int)
 sumcounts.rename(columns={'classification':'ptm_class', 
                           'all_UniAcc':'Gene_name'}, 

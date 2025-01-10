@@ -37,10 +37,10 @@ def read_QuantifiedPeaks_file(PXD_):
     return x
 
 # In[]
-try:
-    psms_file = sys.argv[1]
-except:
-    psms_file = '/home/enrico/FWO_project/MoDPA/v0113/NonDuplicated_PSMs_v0113.csv.gz'
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('file', metavar='file', type=str, help="Path to PSM_unique file")
+psms_file = parser.parse_args().file
 
 file_fld = os.path.split(psms_file)[0]
 os.makedirs(os.path.join(file_fld,'PSMs_MS1_quant'))
